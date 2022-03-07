@@ -16,3 +16,13 @@ code {
 main {
   min-height: 85vh;
 }
+
+h2 {
+  padding-top: 4rem;
+  padding-bottom: 1rem;
+}
+
+.avatar {
+  border-radius: 50%;
+  background-color: antiquewhite;
+}
