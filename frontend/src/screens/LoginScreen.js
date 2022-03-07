@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Col, Form, FormGroup, Row } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -6,6 +6,7 @@ import FormContainer from '../components/FormContainer';
 import { login } from '../actions/userActions';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
+import { LOGIN_RESET } from '../constants/userConstants';
 
 function LoginScreen() {
   const [formData, setFormData] = useState({
@@ -17,7 +18,7 @@ function LoginScreen() {
   const navigate = useNavigate();
 
   const userLogin = useSelector((state) => state.userLogin);
-  const { error, loading } = userLogin;
+  const { error, loading, userInfo } = userLogin;
 
   const changeHandler = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -26,15 +27,38 @@ function LoginScreen() {
   const submitHandler = (e) => {
     e.preventDefault();
     dispatch(login(email, password));
-    navigate('/');
+    // navigate('/');
   };
+
+  // set timeout to Alert
+  const [show, setShow] = useState(true);
+  const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    if (userInfo) {
+      navigate('/');
+    }
+    if (error) {
+      setMessage(error);
+      setTimeout(() => {
+        setShow(false);
+        setMessage('');
+        setShow(true);
+      }, 3000);
+      dispatch({ type: LOGIN_RESET });
+    }
+  }, [error, show, dispatch, navigate, userInfo]);
 
   return (
     <div>
       <FormContainer>
         <h2>Sign In</h2>
         {loading && <Loader />}
-        {error && <Message variant='secondary'>{error}</Message>}
+        {message && (
+          <Message show={show} variant='secondary'>
+            {message}
+          </Message>
+        )}
         <Form onSubmit={(e) => submitHandler(e)}>
           <FormGroup className='my-3' controlId='email'>
             <Form.Label>Email</Form.Label>

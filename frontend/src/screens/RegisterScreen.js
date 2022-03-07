@@ -16,6 +16,9 @@ function ResgisterScreen() {
   const userRegister = useSelector((state) => state.userRegister);
   const { success, loading, error } = userRegister;
 
+  const userLogin = useSelector((state) => state.userLogin);
+  const { userInfo } = userLogin;
+
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -23,7 +26,7 @@ function ResgisterScreen() {
     confirmPassword: '',
   });
   const { username, email, password, confirmPassword } = formData;
-  const [message, setMessage] = useState('');
+  const [confirm, setConfirm] = useState('');
 
   const changeHandler = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -32,26 +35,52 @@ function ResgisterScreen() {
   const submitHandler = (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      setMessage('Password does not match');
+      setConfirm('Password does not match');
     } else {
       dispatch(register(username, email, password));
     }
   };
 
+  const [show, setShow] = useState(true);
+  const [message, setMessage] = useState('');
+
   useEffect(() => {
+    if (userInfo) {
+      navigate('/');
+    }
     if (success) {
       dispatch({ type: REGISTER_RESET });
       navigate('/');
     }
-  }, [navigate, success, dispatch]);
+    if (error) {
+      setMessage(error);
+      setTimeout(() => {
+        setShow(false);
+        setMessage('');
+        setShow(true);
+      }, 3000);
+      dispatch({ type: REGISTER_RESET });
+    }
+    if (confirm) {
+      setTimeout(() => {
+        setShow(false);
+        setConfirm('');
+        setShow(true);
+      }, 3000);
+    }
+  }, [navigate, success, error, show, dispatch, confirm]);
 
   return (
     <div>
       <FormContainer>
         <h2>Register</h2>
         {loading && <Loader />}
+        {confirm && (
+          <Message show={show} variant='secondary'>
+            {confirm}
+          </Message>
+        )}
         {message && <Message variant='secondary'>{message}</Message>}
-        {error && <Message variant='secondary'>{error}</Message>}
         <Form onSubmit={(e) => submitHandler(e)}>
           <FormGroup className='my-3' controlId='username'>
             <Form.Label>Username</Form.Label>
@@ -80,6 +109,7 @@ function ResgisterScreen() {
               type='password'
               placeholder='Enter Password'
               name='password'
+              minLength='6'
               onChange={(e) => changeHandler(e)}
             ></Form.Control>
           </FormGroup>
@@ -90,6 +120,7 @@ function ResgisterScreen() {
               type='password'
               placeholder='Confirm Password'
               name='confirmPassword'
+              minLength='6'
               onChange={(e) => changeHandler(e)}
             ></Form.Control>
           </FormGroup>
