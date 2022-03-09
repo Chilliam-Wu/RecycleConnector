@@ -27,7 +27,6 @@ function LoginScreen() {
   const submitHandler = (e) => {
     e.preventDefault();
     dispatch(login(email, password));
-    // navigate('/');
   };
 
   // set timeout to Alert

@@ -17,12 +17,65 @@ main {
   min-height: 85vh;
 }
 
+h1 {
+  padding-top: 2.5rem;
+}
+
 h2 {
   padding-top: 4rem;
   padding-bottom: 1rem;
 }
 
+h3 {
+  padding-top: 2.5rem;
+  padding-bottom: 0.5rem;
+}
+
+p {
+  padding-top: 0.5rem;
+  margin-bottom: 0;
+}
+
 .avatar {
   border-radius: 50%;
   background-color: antiquewhite;
+}
+
+/* carousel */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  height: 100px;
+  width: 100px;
+}
+
+.carousel {
+  background-color: #d3dedc;
+}
+
+.carousel img {
+  display: block;
+  height: 300px;
+  width: 500px;
+  border-radius: 20%;
+  padding: 30px;
+  margin: 3rem auto 8rem;
+}
+
+.carousel p {
+  color: darkgray;
+}
+
+/* card */
+.card {
+  width: 17.5rem;
+  margin-bottom: 2rem;
+}
+.card-img-top {
+  height: 200px;
+}
+
+.fa-star {
+  text-align: right;
+  margin: 0.5rem 0.5rem 0.5rem auto;
+  /* color: gold; */
 }

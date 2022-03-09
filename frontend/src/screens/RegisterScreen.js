@@ -68,7 +68,7 @@ function ResgisterScreen() {
         setShow(true);
       }, 3000);
     }
-  }, [navigate, success, error, show, dispatch, confirm]);
+  }, [navigate, success, error, show, dispatch, confirm, userInfo]);
 
   return (
     <div>
