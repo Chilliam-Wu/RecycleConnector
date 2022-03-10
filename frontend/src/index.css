@@ -68,6 +68,7 @@ p {
 /* card */
 .card {
   width: 17.5rem;
+  height: 40rem;
   margin-bottom: 2rem;
 }
 .card-img-top {

@@ -2,10 +2,19 @@ const mongoose = require('mongoose');
 
 const productSchema = new mongoose.Schema({
   // who posts this product
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+  userInfo: {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
+    username: {
+      type: String,
+    },
+    avatar: {
+      type: String,
+    },
   },
+
   image: {
     type: String,
   },
@@ -27,3 +36,5 @@ const productSchema = new mongoose.Schema({
     type: Number,
   },
 });
+
+module.exports = Products = mongoose.model('Products', productSchema);

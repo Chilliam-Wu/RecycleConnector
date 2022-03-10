@@ -33,7 +33,10 @@ export const register = (username, email, password) => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: REGISTER_FAIL,
-      payload: error.response.data.msg,
+      payload:
+        error.response && error.response.data.msg
+          ? error.response.data.msg
+          : error.response,
     });
   }
 };
@@ -58,7 +61,10 @@ export const login = (email, password) => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: LOGIN_FAIL,
-      payload: error.response.data.msg,
+      payload:
+        error.response && error.response.data.msg
+          ? error.response.data.msg
+          : error.response,
     });
   }
 };

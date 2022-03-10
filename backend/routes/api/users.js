@@ -104,9 +104,20 @@ router.post('/login', async (req, res) => {
   }
 });
 
-//@route       GET api/users
-//@desc        Test Route
+//@route       GET api/users/:id
+//@desc        Get Certain User
 //@access      Public
-router.get('/', (req, res) => res.send('User route'));
+router.get('/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const user = await User.findById(id);
+    const { username, avatar } = user;
+
+    return res.json({ user: { id, username, avatar } });
+  } catch (error) {
+    return res.status(500).json({ msg: 'Server error' });
+  }
+});
 
 module.exports = router;

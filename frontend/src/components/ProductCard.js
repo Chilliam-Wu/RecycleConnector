@@ -1,39 +1,39 @@
 import React from 'react';
-import { Card, ListGroup, ListGroupItem, Image } from 'react-bootstrap';
+import { Card, ListGroup, ListGroupItem, Image, Button } from 'react-bootstrap';
 
-// function ProductCard({products}) {
-function ProductCard() {
+function ProductCard({ product }) {
+  const { userInfo, image, name, price, description, views } = product;
+
   return (
     <div>
       <Card>
         <i className='fas fa-star fs-5'></i>
         <a href='/product'>
-          <Card.Img
-            variant='top'
-            src='http://www.gravatar.com/avatar/79670b45df1b452326c80247831a6cd6?s=200&r=rg&d=robohash'
-          />
+          <Card.Img variant='top' src={image} />
         </a>
         <Card.Body>
           <a href='/product' style={{ textDecoration: 'none' }}>
-            <Card.Title>Product Name</Card.Title>
+            <Card.Title>{name}</Card.Title>
           </a>
-          <Card.Subtitle style={{ color: '#212529' }}>$1.00</Card.Subtitle>
-          <Card.Text>
-            Description: Lorem ipsum dolor sit amet, consectetur adipiscing
-            elit.
+          <Card.Subtitle style={{ color: '#212529' }}>${price}</Card.Subtitle>
+          <Card.Text className='justify-content-space-between'>
+            {description}
           </Card.Text>
+          <Button style={{ float: 'right' }}>View Details</Button>
         </Card.Body>
         <ListGroup className='list-group-flush'>
           <ListGroupItem style={{ textAlign: 'right', color: '#888' }}>
-            Post by user{' '}
+            Post by {userInfo && userInfo.username}{' '}
             <span>
               <Image
                 className='avatar me-1'
-                src='http://www.gravatar.com/avatar/79670b45df1b452326c80247831a6cd6?s=200&r=rg&d=robohash'
+                src={userInfo && userInfo.avatar}
                 style={{ height: '25px' }}
               />
             </span>
-            <p style={{ fontSize: '0.7rem', marginBottom: '0' }}>3 views</p>
+            <p style={{ fontSize: '0.7rem', marginBottom: '0' }}>
+              {views} views
+            </p>
           </ListGroupItem>
         </ListGroup>
       </Card>
