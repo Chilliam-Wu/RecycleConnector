@@ -68,8 +68,8 @@ p {
 /* card */
 .card {
   width: 17.5rem;
-  height: 40rem;
   margin-bottom: 2rem;
+  height: 700px;
 }
 .card-img-top {
   height: 200px;
@@ -77,6 +77,14 @@ p {
 
 .fa-star {
   text-align: right;
-  margin: 0.5rem 0.5rem 0.5rem auto;
+  margin: 1rem 1rem 2rem auto;
   /* color: gold; */
+}
+
+.card-title {
+  min-height: 30%;
+}
+
+.card-text {
+  min-height: 45%;
 }

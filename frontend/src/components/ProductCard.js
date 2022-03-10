@@ -15,15 +15,16 @@ function ProductCard({ product }) {
           <a href='/product' style={{ textDecoration: 'none' }}>
             <Card.Title>{name}</Card.Title>
           </a>
-          <Card.Subtitle style={{ color: '#212529' }}>${price}</Card.Subtitle>
-          <Card.Text className='justify-content-space-between'>
-            {description}
-          </Card.Text>
+          <Card.Subtitle style={{ color: '#212529', fontSize: '1.3rem' }}>
+            ${price}
+          </Card.Subtitle>
+          <Card.Text>{description}</Card.Text>
           <Button style={{ float: 'right' }}>View Details</Button>
         </Card.Body>
+
         <ListGroup className='list-group-flush'>
           <ListGroupItem style={{ textAlign: 'right', color: '#888' }}>
-            Post by {userInfo && userInfo.username}{' '}
+            Posted by {userInfo && userInfo.username}{' '}
             <span>
               <Image
                 className='avatar me-1'
