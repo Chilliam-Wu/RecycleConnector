@@ -65,7 +65,6 @@ function HomeScreen() {
                   {category.charAt(0).toUpperCase() + category.slice(1)}{' '}
                   <span>
                     <Link
-                      // to={`/products/${category}`}
                       to={`/products?category=${category}`}
                       style={{ fontSize: '0.9rem' }}
                     >

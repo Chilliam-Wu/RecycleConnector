@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
-import { Tab, Row, Col, Nav } from 'react-bootstrap';
+import { Tab, Row, Col, Nav, Button } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { getAllProducts } from '../actions/productActions';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
@@ -10,6 +10,8 @@ import ProductCard from '../components/ProductCard';
 function ProductsScreen() {
   const location = useLocation();
   const entry = location.search ? location.search.split('=')[1] : '';
+
+  const navigate = useNavigate();
 
   const allProducts = useSelector((state) => state.allProducts);
   const { loading, error, products } = allProducts;
@@ -23,15 +25,17 @@ function ProductsScreen() {
   return (
     <div>
       <h1>ALL PRODUCTS</h1>
-      <Link to='/' className='btn btn-light my-3'>
-        Go Back
-      </Link>
+      {/* go back to previous page */}
+      <Button className='btn btn-light mt-5' onClick={() => navigate(-1)}>
+        {' '}
+        Go back
+      </Button>
       {loading ? (
         <Loader />
       ) : error ? (
         <Message variant='secondary'>{error}</Message>
       ) : (
-        <div className='mt-5'>
+        <div className='mt-4'>
           <Tab.Container
             id='left-tabs-example'
             defaultActiveKey={
@@ -58,7 +62,7 @@ function ProductsScreen() {
                       <Nav.Item key={index}>
                         <Nav.Link
                           eventKey={category}
-                          //   href={`/products?category=${category}`}
+                          href={`/products?category=${category}`}
                         >
                           {category.charAt(0).toUpperCase() + category.slice(1)}
                         </Nav.Link>

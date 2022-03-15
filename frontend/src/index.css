@@ -75,7 +75,7 @@ p {
   height: 200px;
 }
 
-.fa-star {
+.card .fa-shopping-cart {
   text-align: right;
   margin: 1rem 1rem 2rem auto;
   /* color: gold; */

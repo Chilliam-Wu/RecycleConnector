@@ -48,4 +48,19 @@ router.get('/', async (req, res) => {
   }
 });
 
+//@route       GET api/products/product/:id
+//@desc        Get Certain Product
+//@access      Public
+router.get('/product/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const product = await Products.findById(id);
+    product.views = product.views + 1;
+    await product.save();
+    return res.json(product);
+  } catch (error) {
+    return res.status(500).json({ msg: 'Server error' });
+  }
+});
+
 module.exports = router;

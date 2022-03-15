@@ -10,7 +10,7 @@ function ProductCarousel() {
         <Carousel.Item interval={3000}>
           <Link to='/product'>
             <Image
-              src='http://www.gravatar.com/avatar/79670b45df1b452326c80247831a6cd6?s=200&r=rg&d=robohash'
+              src='https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg'
               alt='First slide'
             />
             <Carousel.Caption>
