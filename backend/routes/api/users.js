@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const config = require('config');
 const router = express.Router();
 const User = require('../../models/User');
+const verify = require('../../middleware/verify');
 
 //@route       POST api/users/register
 //@desc        Register User
@@ -121,3 +122,37 @@ router.get('/:id', async (req, res) => {
 });
 
 module.exports = router;
+
+//@route       PUT api/users/:id
+//@desc        Edit Certain User
+//@access      Private
+router.put('/:id', verify, async (req, res) => {
+  const { id: user_id } = req.params;
+  const { username } = req.body;
+
+  try {
+    const user = await User.findById(user_id);
+    user.username = username;
+    await user.save();
+
+    // generate a token
+    const { _id: id, avatar, email } = user;
+    const payload = {
+      user: {
+        id: id,
+      },
+    };
+    jwt.sign(
+      payload,
+      config.get('secretKey'),
+      { expiresIn: '30 days' },
+      (error, token) => {
+        if (error) throw error;
+        user.token = token;
+        return res.json({ user: { id, avatar, username, email, token } });
+      }
+    );
+  } catch (error) {
+    return res.status(500).json({ msg: 'Server error' });
+  }
+});
