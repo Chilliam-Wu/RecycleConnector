@@ -9,6 +9,12 @@ import {
   EDIT_PROFILE_REQUEST,
   EDIT_PROFILE_SUCCESS,
   EDIT_PROFILE_FAIL,
+  CONFIRM_PASSWORD_REQUEST,
+  CONFIRM_PASSWORD_SUCCESS,
+  CONFIRM_PASSWORD_FAIL,
+  CHANGE_PASSWORD_REQUEST,
+  CHANGE_PASSWORD_SUCCESS,
+  CHANGE_PASSWORD_FAIL,
 } from '../constants/userConstants';
 import axios from 'axios';
 import { URL } from '../constants/urlConstants';
@@ -107,6 +113,86 @@ export const editProfile = (id, username) => async (dispatch, getState) => {
   } catch (error) {
     dispatch({
       type: EDIT_PROFILE_FAIL,
+      payload:
+        error.response && error.response.data.msg
+          ? error.response.data.msg
+          : error.response,
+    });
+  }
+};
+
+export const confirmPassword = (id, password) => async (dispatch, getState) => {
+  try {
+    dispatch({ type: CONFIRM_PASSWORD_REQUEST });
+
+    const {
+      userLogin: { userInfo },
+    } = getState();
+
+    if (userInfo.token) {
+      axios.defaults.headers.common['x-auth-token'] = userInfo.token;
+    }
+
+    const config = {
+      headers: {
+        'Content-type': 'application/json',
+      },
+    };
+
+    const confirmPassword = JSON.stringify({ password });
+
+    const {
+      data: { msg },
+    } = await axios.post(
+      `${URL}/api/users/${id}/confirmPassword`,
+      confirmPassword,
+      config
+    );
+
+    dispatch({ type: CONFIRM_PASSWORD_SUCCESS, payload: msg });
+  } catch (error) {
+    dispatch({
+      type: CONFIRM_PASSWORD_FAIL,
+      payload:
+        error.response && error.response.data.msg
+          ? error.response.data.msg
+          : error.response,
+    });
+  }
+};
+
+export const changePassword = (id, password) => async (dispatch, getState) => {
+  try {
+    dispatch({ type: CHANGE_PASSWORD_REQUEST });
+
+    const {
+      userLogin: { userInfo },
+    } = getState();
+
+    if (userInfo.token) {
+      axios.defaults.headers.common['x-auth-token'] = userInfo.token;
+    }
+
+    const newPassword = JSON.stringify({ password });
+
+    const config = {
+      headers: {
+        'Content-type': 'application/json',
+      },
+    };
+
+    const {
+      data: { msg },
+    } = await axios.put(
+      `${URL}/api/users/${id}/changePassword`,
+      newPassword,
+      config
+    );
+
+    dispatch({ type: CHANGE_PASSWORD_SUCCESS, payload: msg });
+  } catch (error) {
+    dispatch({
+      type: CHANGE_PASSWORD_FAIL,
       payload:
         error.response && error.response.data.msg
           ? error.response.data.msg

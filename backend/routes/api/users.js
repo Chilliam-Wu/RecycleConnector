@@ -156,3 +156,43 @@ router.put('/:id', verify, async (req, res) => {
     return res.status(500).json({ msg: 'Server error' });
   }
 });
+
+//@route       POST api/users/:id/confirmPassword
+//@desc        Confirm password to change password
+//@access      Private
+router.post('/:id/confirmPassword', verify, async (req, res) => {
+  const { password } = req.body;
+  const { id } = req.params;
+
+  try {
+    const user = await User.findById(id);
+    const isMatched = await bcrypt.compare(password, user.password);
+
+    if (!isMatched) {
+      return res.status(400).json({ msg: 'Wrong password' });
+    }
+
+    return res.status(200).json({ msg: 'Confirm password successfully!' });
+  } catch (error) {
+    return res.status(500).json({ msg: 'Server error' });
+  }
+});
+
+//@route       PUT api/users/:id/changePassword
+//@desc        Change password
+//@access      Private
+router.put('/:id/changePassword', verify, async (req, res) => {
+  const { password } = req.body;
+  const { id } = req.params;
+  try {
+    const user = await User.findById(id);
+
+    // encrypt password
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(password, salt);
+    await user.save();
+    return res.status(200).json({ msg: 'Change password successfully!' });
+  } catch (error) {
+    return res.status(500).json({ msg: 'Server error' });
+  }
+});
