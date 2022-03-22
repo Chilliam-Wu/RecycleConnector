@@ -28,6 +28,7 @@ app.use(cors(corsOptions));
 //Define Routes
 app.use('/api/users', require('./routes/api/users'));
 app.use('/api/products', require('./routes/api/products'));
+app.use('/api/posts', require('./routes/api/posts'));
 
 app.get('/', (req, res) => res.send('API is running'));
 

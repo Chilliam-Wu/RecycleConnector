@@ -41,13 +41,13 @@ function HomeScreen() {
   return (
     <div>
       <h1>TOP VIEWS</h1>
-      <ProductCarousel />
       {loading ? (
         <Loader />
       ) : error ? (
         <Message variant='secondary'>{error}</Message>
       ) : (
         <div>
+          <ProductCarousel products={products} />
           {/* Display top views by category */}
           {/* Remove duplicate items  */}
           {products
