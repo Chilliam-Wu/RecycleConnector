@@ -3,7 +3,6 @@ import { Carousel, Image } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
 function ProductCarousel({ products }) {
-  console.log(products);
   return (
     <div>
       <Carousel pause='hover' className='mt-3'>

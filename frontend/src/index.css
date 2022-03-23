@@ -88,3 +88,15 @@ p {
 .card-text {
   min-height: 45%;
 }
+
+button[editext='edit-button'] {
+  display: none;
+}
+
+button[editext='save-button'] {
+  display: none;
+}
+
+button[editext='cancel-button'] {
+  display: none;
+}

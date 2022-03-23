@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, Col, Image, Row, Table } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { getPosts } from '../actions/postActions';
+import { getPosts, editPost } from '../actions/postActions';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
 import EdiText from 'react-editext';
@@ -14,33 +14,65 @@ function PostScreen() {
   const postInfo = useSelector((state) => state.postInfo);
   const { loading, error, posts } = postInfo;
 
-  const [value, setValue] = useState('');
+  const postEdit = useSelector((state) => state.postEdit);
+  const { loading: edit_loading, error: edit_error, success } = postEdit;
+
+  const userLogin = useSelector((state) => state.userLogin);
+  const { userInfo } = userLogin;
+
   const [editing, setEditing] = useState(false);
-  const [textIndex, setTextIndex] = useState(-1);
+  const [id, setId] = useState(-1);
+  const [name, setName] = useState('');
+  const [price, setPrice] = useState(0);
+  const [category, setCategory] = useState('');
 
-  const [details, setDetails] = useState({
-    name: '',
-    price: '',
-    category: '',
-  });
-
-  const { name, price, category } = details;
-
-  const saveHandler = (value) => {
-    setValue(value);
+  // save-button
+  const saveNameHandler = (value) => {
+    setName(value);
   };
 
-  console.log(value);
-  console.log('name:' + name);
+  const savePriceHandler = (value) => {
+    setPrice(Number(value.slice(1)).toFixed(2));
+  };
 
-  const editHandler = (index) => {
-    setTextIndex(index);
+  const saveCategoryHandler = (value) => {
+    setCategory(value.charAt(0).toLowerCase() + value.slice(1));
+  };
+
+  console.log('name: ' + name);
+  console.log('price: ' + price);
+  console.log('category: ' + category);
+
+  const editHandler = (post_id) => {
+    setId(post_id);
+    setEditing((value) => !value);
+  };
+
+  // use DOM to trigger save-button
+  const triggerSaveClick = () => {
+    document.getElementsByClassName('name')[0].click();
+    document.getElementsByClassName('price')[0].click();
+    document.getElementsByClassName('category')[0].click();
+  };
+
+  const confirmHandler = (post_id) => {
+    setEditing((value) => !value);
+    triggerSaveClick();
+    dispatch(editPost(name, price, category, post_id));
+  };
+
+  const trashHandler = (post_id) => {};
+
+  const xmarkHandler = () => {
     setEditing((value) => !value);
   };
 
   useEffect(() => {
+    if (!userInfo) {
+      navigate('/login');
+    }
     dispatch(getPosts());
-  }, [dispatch]);
+  }, [dispatch, success, userInfo, navigate]);
 
   return (
     <div>
@@ -48,7 +80,7 @@ function PostScreen() {
       <Button className='btn btn-light my-5' onClick={() => navigate(-1)}>
         Go back
       </Button>
-
+      {edit_error && <Message variant='secondary'>{edit_error}</Message>}
       {loading ? (
         <Loader />
       ) : error ? (
@@ -74,51 +106,72 @@ function PostScreen() {
                 </td>
                 <td>
                   <EdiText
-                    index={index}
-                    showButtonsOnHover
-                    startEditingOnFocus
                     value={post.name}
-                    name='name'
+                    saveButtonClassName='name'
                     type='text'
-                    onSave={() => saveHandler()}
-                    editing={textIndex === index && editing}
+                    onSave={saveNameHandler}
+                    editing={id === post._id && editing}
                   ></EdiText>
                 </td>
-                {/* <td>${post.price}</td> */}
                 <td>
                   <EdiText
-                    index={index}
-                    showButtonsOnHover
-                    startEditingOnFocus
-                    value={post.price}
+                    value={'$' + post.price}
+                    saveButtonClassName='price'
                     type='text'
-                    onSave={() => saveHandler()}
-                    editing={textIndex === index && editing}
+                    onSave={savePriceHandler}
+                    editing={id === post._id && editing}
                   ></EdiText>
                 </td>
-                {/* <td>
-                  {post.category.charAt(0).toUpperCase() +
-                    post.category.slice(1)}
-                </td> */}
                 <td>
                   <EdiText
-                    index={index}
-                    showButtonsOnHover
-                    startEditingOnFocus
-                    value={post.category}
+                    value={
+                      post.category.charAt(0).toUpperCase() +
+                      post.category.slice(1)
+                    }
+                    saveButtonClassName='category'
                     type='text'
-                    onSave={() => saveHandler()}
-                    editing={textIndex === index && editing}
+                    onSave={saveCategoryHandler}
+                    editing={id === post._id && editing}
                   ></EdiText>
                 </td>
-                <td>
-                  <Button className='me-2' onClick={() => editHandler(index)}>
-                    <i className='fas fa-edit'></i>
-                  </Button>
-                  <Button variant='secondary'>
-                    <i className='fas fa-trash'></i>
-                  </Button>
-                </td>
+                {/* non-editing mode and editing mode */}
+                {!editing ? (
+                  <td>
+                    <Button
+                      className='me-2'
+                      onClick={() => editHandler(post._id)}
+                    >
+                      <i className='fas fa-edit'></i>
+                    </Button>
+                    <Button
+                      variant='secondary'
+                      onClick={() => trashHandler(post._id)}
+                    >
+                      <i className='fas fa-trash'></i>
+                    </Button>
+                  </td>
+                ) : editing && id === post._id ? (
+                  <td>
+                    <Button
+                      className='me-2'
+                      onClick={() => confirmHandler(post._id)}
+                    >
+                      <i className='fas fa-check'></i>
+                    </Button>
+                    <Button variant='secondary' onClick={() => xmarkHandler()}>
+                      <i className='fas fa-xmark'></i>
+                    </Button>
+                  </td>
+                ) : (
+                  <td>
+                    <Button className='me-2' disabled>
+                      <i className='fas fa-edit'></i>
+                    </Button>
+                    <Button variant='secondary' disabled>
+                      <i className='fas fa-trash'></i>
+                    </Button>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>
