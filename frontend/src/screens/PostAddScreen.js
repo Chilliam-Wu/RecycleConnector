@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Col, Form, FormGroup, Row } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { addPost } from '../actions/postActions';
 import FormContainer from '../components/FormContainer';
+import { ADD_POST_RESET } from '../constants/postConstants';
 
 function PostAddScreen() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [formData, setFormData] = useState({
     name: '',
@@ -13,17 +17,39 @@ function PostAddScreen() {
     description: '',
   });
 
-  const { name, price, category, description } = formData;
+  const { name, category, price, description } = formData;
+
+  const userLogin = useSelector((state) => state.userLogin);
+  const { userInfo } = userLogin;
+
+  const postAdd = useSelector((state) => state.postAdd);
+  const { error, success } = postAdd;
 
   const changeHandler = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const submithandler = (e) => {
+    e.preventDefault();
+    dispatch(addPost(name, category, price, description));
+  };
+
+  useEffect(() => {
+    if (!userInfo) {
+      navigate('/login');
+    }
+
+    if (success) {
+      dispatch({ type: ADD_POST_RESET });
+      navigate(-1);
+    }
+  }, [navigate, success, userInfo, dispatch]);
+
   return (
     <div>
       <FormContainer>
         <h2>Add Post</h2>
-        <Form>
+        <Form onSubmit={(e) => submithandler(e)}>
           <FormGroup className='my-3' controlId='name'>
             <Form.Label>Name</Form.Label>
             <Form.Control
@@ -90,7 +116,11 @@ function PostAddScreen() {
               >
                 <i className='fas fa-xmark'></i> Cancel
               </Button>
-              <Button className='mt-3 me-3' style={{ float: 'right' }}>
+              <Button
+                className='mt-3 me-3'
+                style={{ float: 'right' }}
+                type='submit'
+              >
                 <i className='fas fa-plus'></i> Add
               </Button>
             </Col>

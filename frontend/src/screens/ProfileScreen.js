@@ -189,7 +189,7 @@ function ProfileScreen() {
               <Col className='mx-5' xs={3}>
                 <Image
                   className='avatar'
-                  src='http://www.gravatar.com/avatar/79670b45df1b452326c80247831a6cd6?s=200&r=rg&d=robohash'
+                  src={userInfo && userInfo.avatar}
                   alt='Avatar'
                   style={{ height: '100px' }}
                 />

@@ -7,7 +7,12 @@ import {
   userChangePasswordReducer,
 } from './userReducers';
 import { allProductsReducer, productDetailsReducer } from './productReducers';
-import { postInfoReducer, postEditReducer } from './postReducers';
+import {
+  postInfoReducer,
+  postEditReducer,
+  postAddReducer,
+  postDeleteReducer,
+} from './postReducers';
 
 export default combineReducers({
   userRegister: userRegisterReducer,
@@ -19,4 +24,6 @@ export default combineReducers({
   productDetails: productDetailsReducer,
   postInfo: postInfoReducer,
   postEdit: postEditReducer,
+  postAdd: postAddReducer,
+  postDelete: postDeleteReducer,
 });

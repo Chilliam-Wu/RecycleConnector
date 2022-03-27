@@ -6,6 +6,12 @@ import {
   EDIT_POST_REQUEST,
   EDIT_POST_SUCCESS,
   EDIT_POST_FAIL,
+  ADD_POST_REQUEST,
+  ADD_POST_SUCCESS,
+  ADD_POST_FAIL,
+  DELETE_POST_REQUEST,
+  DELETE_POST_SUCCESS,
+  DELETE_POST_FAIL,
 } from '../constants/postConstants';
 import { URL } from '../constants/urlConstants';
 
@@ -70,3 +76,63 @@ export const editPost =
       });
     }
   };
+
+export const addPost =
+  (name, category, price, description) => async (dispatch, getState) => {
+    try {
+      dispatch({ type: ADD_POST_REQUEST });
+      const {
+        userLogin: { userInfo },
+      } = getState();
+      if (userInfo.token) {
+        axios.defaults.headers.common['x-auth-token'] = userInfo.token;
+      }
+
+      const newPost = JSON.stringify({ name, category, price, description });
+
+      const config = {
+        headers: {
+          'Content-type': 'application/json',
+        },
+      };
+
+      await axios.post(`${URL}/api/products`, newPost, config);
+
+      dispatch({ type: ADD_POST_SUCCESS });
+    } catch (error) {
+      dispatch({
+        type: ADD_POST_FAIL,
+        payload:
+          error.response && error.response.data.msg
+            ? error.response.data.msg
+            : error.response,
+      });
+    }
+  };
+
+export const deletePost = (post_id) => async (dispatch, getState) => {
+  try {
+    dispatch({ type: DELETE_POST_REQUEST });
+    const {
+      userLogin: { userInfo },
+    } = getState();
+
+    if (userInfo.token) {
+      axios.defaults.headers.common['x-auth-token'] = userInfo.token;
+    }
+
+    const {
+      data: { msg },
+    } = await axios.delete(`${URL}/api/products/${post_id}`);
+
+    dispatch({ type: DELETE_POST_SUCCESS, payload: msg });
+  } catch (error) {
+    dispatch({
+      type: DELETE_POST_FAIL,
+      payload:
+        error.response && error.response.data.msg
+          ? error.response.data.msg
+          : error.response,
+    });
+  }
+};

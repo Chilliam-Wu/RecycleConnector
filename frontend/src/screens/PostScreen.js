@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Button, Col, Image, Row, Table } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
-import { getPosts, editPost } from '../actions/postActions';
+import { getPosts, editPost, deletePost } from '../actions/postActions';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
 import EdiText from 'react-editext';
+import { DELETE_POST_RESET } from '../constants/postConstants';
 
 function PostScreen() {
   const navigate = useNavigate();
@@ -20,6 +21,9 @@ function PostScreen() {
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
 
+  const postDelete = useSelector((state) => state.postDelete);
+  const { success: delete_success } = postDelete;
+
   const [editing, setEditing] = useState(false);
   const [id, setId] = useState(-1);
   const [name, setName] = useState('');
@@ -29,6 +33,7 @@ function PostScreen() {
   const [click, setClick] = useState(true);
   const [show, setShow] = useState(true);
   const [message, setMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   const editHandler = (
     post_id,
@@ -59,13 +64,16 @@ function PostScreen() {
     setClick((click) => !click);
   };
 
-  const trashHandler = (post_id) => {};
+  const trashHandler = (post_id) => {
+    dispatch(deletePost(post_id));
+  };
 
   const xmarkHandler = () => {
     setEditing((value) => !value);
   };
 
   useEffect(() => {
+    dispatch({ type: DELETE_POST_RESET });
     if (!userInfo) {
       navigate('/login');
     }
@@ -78,7 +86,6 @@ function PostScreen() {
       }, 3000);
     }
     if (!click) {
-      console.log(price);
       if (message) {
         setTimeout(() => {
           setShow(false);
@@ -87,11 +94,19 @@ function PostScreen() {
         }, 3000);
       } else {
         dispatch(editPost(name, price, category, description, id));
-        setClick((click) => !click);
       }
+      setClick((click) => !click);
+    }
+    if (delete_success) {
+      setSuccessMessage(delete_success);
+      setTimeout(() => {
+        setShow(false);
+        setSuccessMessage('');
+        setShow(true);
+      }, 3000);
     }
     dispatch(getPosts());
-  }, [userInfo, navigate, dispatch, click]);
+  }, [userInfo, navigate, dispatch, click, delete_success]);
 
   return (
     <div>
@@ -109,6 +124,11 @@ function PostScreen() {
           {message}
         </Message>
       )}
+      {successMessage && (
+        <Message show={show} variant='success'>
+          {successMessage}
+        </Message>
+      )}
       {loading ? (
         <Loader />
       ) : edit_loading ? (
@@ -119,12 +139,12 @@ function PostScreen() {
         <Table responsive striped>
           <thead>
             <tr>
-              <th>NO.</th>
-              <th>IMAGE</th>
-              <th>NAME</th>
-              <th>PRICE</th>
-              <th>CATEGORY</th>
-              <th>DESCRIPTION</th>
+              <th style={{ width: 50 }}>NO.</th>
+              <th style={{ width: 200 }}>IMAGE</th>
+              <th style={{ width: 200 }}>NAME</th>
+              <th style={{ width: 100 }}>PRICE</th>
+              <th style={{ width: 125 }}>CATEGORY</th>
+              <th style={{ width: 550 }}>DESCRIPTION</th>
               <th></th>
             </tr>
           </thead>
@@ -133,7 +153,10 @@ function PostScreen() {
               <tr key={index}>
                 <td style={{ verticalAlign: 'middle' }}>{index + 1}</td>
                 <td style={{ verticalAlign: 'middle' }}>
-                  <Image style={{ height: '150px' }} src={post.image}></Image>
+                  <Image
+                    style={{ height: '150px', width: '120px' }}
+                    src={post.image}
+                  ></Image>
                 </td>
                 <td style={{ verticalAlign: 'middle' }}>
                   <EdiText
@@ -141,8 +164,10 @@ function PostScreen() {
                     saveButtonClassName='name'
                     type='textarea'
                     inputProps={{
-                      rows: 4,
-                      style: { width: 125 },
+                      rows: 3,
+                      style: {
+                        resize: 'none',
+                      },
                     }}
                     onSave={(value) => setName(value)}
                     editing={id === post._id && editing}
@@ -154,12 +179,13 @@ function PostScreen() {
                     saveButtonClassName='price'
                     type='textarea'
                     inputProps={{
-                      rows: 4,
-                      style: { width: 100 },
+                      rows: 3,
+                      style: {
+                        resize: 'none',
+                      },
                     }}
                     onSave={(value) => {
-                      isNaN(value) ||
-                      (!isNaN(value) && value.toString().indexOf('.') !== -1)
+                      !isNaN(Number(value.slice(1)))
                         ? setPrice(Number(value.slice(1)).toFixed(2))
                         : setMessage('Invalid price');
                     }}
@@ -175,8 +201,10 @@ function PostScreen() {
                     saveButtonClassName='category'
                     type='textarea'
                     inputProps={{
-                      rows: 4,
-                      style: { width: 100 },
+                      rows: 3,
+                      style: {
+                        resize: 'none',
+                      },
                     }}
                     onSave={(value) =>
                       setCategory(
@@ -192,8 +220,10 @@ function PostScreen() {
                     saveButtonClassName='description'
                     type='textarea'
                     inputProps={{
-                      rows: 4,
-                      style: { width: 500 },
+                      rows: 3,
+                      style: {
+                        resize: 'none',
+                      },
                     }}
                     onSave={(value) => setDescription(value)}
                     editing={id === post._id && editing}
