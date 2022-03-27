@@ -23,7 +23,7 @@ router.get('/', verify, async (req, res) => {
 //@access      Private
 router.post('/edit/:id', verify, async (req, res) => {
   const { id } = req.params;
-  const { name, price, category } = req.body;
+  const { name, price, category, description } = req.body;
   try {
     const allProducts = await Products.find().all();
     const product = allProducts
@@ -33,6 +33,7 @@ router.post('/edit/:id', verify, async (req, res) => {
     product.name = name;
     product.price = price;
     product.category = category;
+    product.description = description;
 
     await product.save();
     return res.json(product);

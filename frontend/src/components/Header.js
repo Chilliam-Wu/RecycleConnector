@@ -23,6 +23,9 @@ function Header() {
             className='justify-content-end'
           >
             <Nav>
+              <Nav.Link href='/' className='me-4'>
+                Home
+              </Nav.Link>
               <Nav.Link href='/products' className='me-4'>
                 All Products
               </Nav.Link>

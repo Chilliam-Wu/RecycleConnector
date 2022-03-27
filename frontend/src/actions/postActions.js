@@ -33,7 +33,8 @@ export const getPosts = () => async (dispatch, getState) => {
 };
 
 export const editPost =
-  (name, price, category, post_id) => async (dispatch, getState) => {
+  (name, price, category, description, post_id) =>
+  async (dispatch, getState) => {
     try {
       dispatch({ type: EDIT_POST_REQUEST });
 
@@ -45,7 +46,7 @@ export const editPost =
         axios.defaults.headers.common['x-auth-token'] = userInfo.token;
       }
 
-      const newDetails = JSON.stringify({ name, price, category });
+      const newDetails = JSON.stringify({ name, price, category, description });
 
       const config = {
         headers: {

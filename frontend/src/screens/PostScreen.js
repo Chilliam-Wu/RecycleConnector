@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Col, Image, Row, Table } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { getPosts, editPost } from '../actions/postActions';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
@@ -25,26 +25,23 @@ function PostScreen() {
   const [name, setName] = useState('');
   const [price, setPrice] = useState(0);
   const [category, setCategory] = useState('');
+  const [description, setDescription] = useState('');
   const [click, setClick] = useState(true);
+  const [show, setShow] = useState(true);
+  const [message, setMessage] = useState('');
 
-  // save-button
-  // const saveNameHandler = (value) => {
-  //   setName(value);
-  // };
-
-  // const savePriceHandler = (value) => {
-  //   setPrice(Number(value.slice(1)).toFixed(2));
-  // };
-
-  // const saveCategoryHandler = (value) => {
-  //   setCategory(value.charAt(0).toLowerCase() + value.slice(1));
-  // };
-
-  const editHandler = (post_id, post_name, post_price, post_category) => {
+  const editHandler = (
+    post_id,
+    post_name,
+    post_price,
+    post_category,
+    post_description
+  ) => {
     setId(post_id);
     setName(post_name);
     setPrice(post_price);
     setCategory(post_category);
+    setDescription(post_description);
     setEditing((value) => !value);
   };
 
@@ -53,6 +50,7 @@ function PostScreen() {
     document.getElementsByClassName('name')[0].click();
     document.getElementsByClassName('price')[0].click();
     document.getElementsByClassName('category')[0].click();
+    document.getElementsByClassName('description')[0].click();
   };
 
   const confirmHandler = () => {
@@ -71,9 +69,26 @@ function PostScreen() {
     if (!userInfo) {
       navigate('/login');
     }
+    if (edit_error) {
+      setMessage(edit_error);
+      setTimeout(() => {
+        setShow(false);
+        setMessage('');
+        setShow(true);
+      }, 3000);
+    }
     if (!click) {
-      dispatch(editPost(name, price, category, id));
-      setClick((click) => !click);
+      console.log(price);
+      if (message) {
+        setTimeout(() => {
+          setShow(false);
+          setMessage('');
+          setShow(true);
+        }, 3000);
+      } else {
+        dispatch(editPost(name, price, category, description, id));
+        setClick((click) => !click);
+      }
     }
     dispatch(getPosts());
   }, [userInfo, navigate, dispatch, click]);
@@ -84,7 +99,16 @@ function PostScreen() {
       <Button className='btn btn-light my-5' onClick={() => navigate(-1)}>
         Go back
       </Button>
-      {edit_error && <Message variant='secondary'>{edit_error}</Message>}
+      <Link className='btn btn-primary my-5 mx-3' to='/post/add'>
+        {' '}
+        <i className='fas fa-plus'></i> Add post
+      </Link>
+      {/* {edit_error && <Message variant='secondary'>{edit_error}</Message>} */}
+      {message && (
+        <Message show={show} variant='secondary'>
+          {message}
+        </Message>
+      )}
       {loading ? (
         <Loader />
       ) : edit_loading ? (
@@ -92,7 +116,7 @@ function PostScreen() {
       ) : error ? (
         <Message variant='secondary'>{error}</Message>
       ) : (
-        <Table responsive>
+        <Table responsive striped>
           <thead>
             <tr>
               <th>NO.</th>
@@ -100,44 +124,60 @@ function PostScreen() {
               <th>NAME</th>
               <th>PRICE</th>
               <th>CATEGORY</th>
+              <th>DESCRIPTION</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
             {posts.map((post, index) => (
               <tr key={index}>
-                <td>{index + 1}</td>
-                <td>
+                <td style={{ verticalAlign: 'middle' }}>{index + 1}</td>
+                <td style={{ verticalAlign: 'middle' }}>
                   <Image style={{ height: '150px' }} src={post.image}></Image>
                 </td>
-                <td>
+                <td style={{ verticalAlign: 'middle' }}>
                   <EdiText
                     value={post.name}
                     saveButtonClassName='name'
-                    type='text'
+                    type='textarea'
+                    inputProps={{
+                      rows: 4,
+                      style: { width: 125 },
+                    }}
                     onSave={(value) => setName(value)}
                     editing={id === post._id && editing}
                   ></EdiText>
                 </td>
-                <td>
+                <td style={{ verticalAlign: 'middle' }}>
                   <EdiText
                     value={'$' + post.price.toFixed(2)}
                     saveButtonClassName='price'
-                    type='text'
-                    onSave={(value) =>
-                      setPrice(Number(value.slice(1)).toFixed(2))
-                    }
+                    type='textarea'
+                    inputProps={{
+                      rows: 4,
+                      style: { width: 100 },
+                    }}
+                    onSave={(value) => {
+                      isNaN(value) ||
+                      (!isNaN(value) && value.toString().indexOf('.') !== -1)
+                        ? setPrice(Number(value.slice(1)).toFixed(2))
+                        : setMessage('Invalid price');
+                    }}
                     editing={id === post._id && editing}
                   ></EdiText>
                 </td>
-                <td>
+                <td style={{ verticalAlign: 'middle' }}>
                   <EdiText
                     value={
                       post.category.charAt(0).toUpperCase() +
                       post.category.slice(1)
                     }
                     saveButtonClassName='category'
-                    type='text'
+                    type='textarea'
+                    inputProps={{
+                      rows: 4,
+                      style: { width: 100 },
+                    }}
                     onSave={(value) =>
                       setCategory(
                         value.charAt(0).toLowerCase() + value.slice(1)
@@ -146,17 +186,31 @@ function PostScreen() {
                     editing={id === post._id && editing}
                   ></EdiText>
                 </td>
+                <td style={{ verticalAlign: 'middle' }}>
+                  <EdiText
+                    value={post.description}
+                    saveButtonClassName='description'
+                    type='textarea'
+                    inputProps={{
+                      rows: 4,
+                      style: { width: 500 },
+                    }}
+                    onSave={(value) => setDescription(value)}
+                    editing={id === post._id && editing}
+                  ></EdiText>
+                </td>
                 {/* non-editing mode and editing mode */}
                 {!editing ? (
-                  <td>
+                  <td style={{ verticalAlign: 'middle' }}>
                     <Button
-                      className='me-2'
+                      style={{ display: 'block' }}
                       onClick={() =>
                         editHandler(
                           post._id,
                           post.name,
                           post.price,
-                          post.category
+                          post.category,
+                          post.description
                         )
                       }
                     >
@@ -165,28 +219,33 @@ function PostScreen() {
                     <Button
                       variant='secondary'
                       onClick={() => trashHandler(post._id)}
+                      className='mt-2'
                     >
                       <i className='fas fa-trash'></i>
                     </Button>
                   </td>
                 ) : editing && id === post._id ? (
-                  <td>
+                  <td style={{ verticalAlign: 'middle' }}>
                     <Button
-                      className='me-2'
                       onClick={() => confirmHandler(post._id)}
+                      style={{ display: 'block' }}
                     >
                       <i className='fas fa-check'></i>
                     </Button>
-                    <Button variant='secondary' onClick={() => xmarkHandler()}>
-                      <i className='fas fa-xmark'></i>
+                    <Button
+                      variant='secondary'
+                      className='mt-2'
+                      onClick={() => xmarkHandler()}
+                    >
+                      <i className='fa fa-xmark'></i>
                     </Button>
                   </td>
                 ) : (
-                  <td>
-                    <Button className='me-2' disabled>
+                  <td style={{ verticalAlign: 'middle' }}>
+                    <Button disabled style={{ display: 'block' }}>
                       <i className='fas fa-edit'></i>
                     </Button>
-                    <Button variant='secondary' disabled>
+                    <Button variant='secondary' disabled className='mt-2'>
                       <i className='fas fa-trash'></i>
                     </Button>
                   </td>
@@ -194,10 +253,6 @@ function PostScreen() {
               </tr>
             ))}
           </tbody>
-          <Button className='btn btn-primary my-5'>
-            {' '}
-            <i className='fas fa-plus'></i> Add post
-          </Button>
         </Table>
       )}
     </div>
