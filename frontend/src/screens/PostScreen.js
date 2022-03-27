@@ -25,26 +25,26 @@ function PostScreen() {
   const [name, setName] = useState('');
   const [price, setPrice] = useState(0);
   const [category, setCategory] = useState('');
+  const [click, setClick] = useState(true);
 
   // save-button
-  const saveNameHandler = (value) => {
-    setName(value);
-  };
+  // const saveNameHandler = (value) => {
+  //   setName(value);
+  // };
 
-  const savePriceHandler = (value) => {
-    setPrice(Number(value.slice(1)).toFixed(2));
-  };
+  // const savePriceHandler = (value) => {
+  //   setPrice(Number(value.slice(1)).toFixed(2));
+  // };
 
-  const saveCategoryHandler = (value) => {
-    setCategory(value.charAt(0).toLowerCase() + value.slice(1));
-  };
+  // const saveCategoryHandler = (value) => {
+  //   setCategory(value.charAt(0).toLowerCase() + value.slice(1));
+  // };
 
-  console.log('name: ' + name);
-  console.log('price: ' + price);
-  console.log('category: ' + category);
-
-  const editHandler = (post_id) => {
+  const editHandler = (post_id, post_name, post_price, post_category) => {
     setId(post_id);
+    setName(post_name);
+    setPrice(post_price);
+    setCategory(post_category);
     setEditing((value) => !value);
   };
 
@@ -55,10 +55,10 @@ function PostScreen() {
     document.getElementsByClassName('category')[0].click();
   };
 
-  const confirmHandler = (post_id) => {
+  const confirmHandler = () => {
     setEditing((value) => !value);
     triggerSaveClick();
-    dispatch(editPost(name, price, category, post_id));
+    setClick((click) => !click);
   };
 
   const trashHandler = (post_id) => {};
@@ -71,8 +71,12 @@ function PostScreen() {
     if (!userInfo) {
       navigate('/login');
     }
+    if (!click) {
+      dispatch(editPost(name, price, category, id));
+      setClick((click) => !click);
+    }
     dispatch(getPosts());
-  }, [dispatch, success, userInfo, navigate]);
+  }, [userInfo, navigate, dispatch, click]);
 
   return (
     <div>
@@ -82,6 +86,8 @@ function PostScreen() {
       </Button>
       {edit_error && <Message variant='secondary'>{edit_error}</Message>}
       {loading ? (
+        <Loader />
+      ) : edit_loading ? (
         <Loader />
       ) : error ? (
         <Message variant='secondary'>{error}</Message>
@@ -109,16 +115,18 @@ function PostScreen() {
                     value={post.name}
                     saveButtonClassName='name'
                     type='text'
-                    onSave={saveNameHandler}
+                    onSave={(value) => setName(value)}
                     editing={id === post._id && editing}
                   ></EdiText>
                 </td>
                 <td>
                   <EdiText
-                    value={'$' + post.price}
+                    value={'$' + post.price.toFixed(2)}
                     saveButtonClassName='price'
                     type='text'
-                    onSave={savePriceHandler}
+                    onSave={(value) =>
+                      setPrice(Number(value.slice(1)).toFixed(2))
+                    }
                     editing={id === post._id && editing}
                   ></EdiText>
                 </td>
@@ -130,7 +138,11 @@ function PostScreen() {
                     }
                     saveButtonClassName='category'
                     type='text'
-                    onSave={saveCategoryHandler}
+                    onSave={(value) =>
+                      setCategory(
+                        value.charAt(0).toLowerCase() + value.slice(1)
+                      )
+                    }
                     editing={id === post._id && editing}
                   ></EdiText>
                 </td>
@@ -139,7 +151,14 @@ function PostScreen() {
                   <td>
                     <Button
                       className='me-2'
-                      onClick={() => editHandler(post._id)}
+                      onClick={() =>
+                        editHandler(
+                          post._id,
+                          post.name,
+                          post.price,
+                          post.category
+                        )
+                      }
                     >
                       <i className='fas fa-edit'></i>
                     </Button>
