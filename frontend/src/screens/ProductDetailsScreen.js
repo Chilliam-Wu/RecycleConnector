@@ -13,6 +13,8 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import { getProductDetails } from '../actions/productActions';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
+import { addToCart } from '../actions/cartActions';
+import { ADD_TO_CART_RESET } from '../constants/cartConstants';
 
 function ProductDetailsScreen() {
   const { id } = useParams();
@@ -20,13 +22,41 @@ function ProductDetailsScreen() {
   const navigate = useNavigate();
 
   const [show, setShow] = useState(false);
+  const [msgShow, setMsgShow] = useState(true);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
 
   const productDetails = useSelector((state) => state.productDetails);
   const { loading, error, product } = productDetails;
 
+  const cartAdd = useSelector((state) => state.cartAdd);
+  const { success: add_success, error: add_error } = cartAdd;
+
+  const addHandler = () => {
+    dispatch(addToCart(id));
+  };
+
   useEffect(() => {
     dispatch(getProductDetails(id));
-  }, [id, dispatch]);
+    if (add_error) {
+      setErrorMsg(add_error);
+      setTimeout(() => {
+        setMsgShow(false);
+        setErrorMsg('');
+        setMsgShow(true);
+      }, 3000);
+      dispatch({ type: ADD_TO_CART_RESET });
+    }
+    if (add_success) {
+      setSuccessMsg(add_success);
+      setTimeout(() => {
+        setMsgShow(false);
+        setSuccessMsg('');
+        setMsgShow(true);
+      }, 3000);
+      dispatch({ type: ADD_TO_CART_RESET });
+    }
+  }, [id, dispatch, add_error, add_success]);
 
   return (
     <div>
@@ -43,6 +73,16 @@ function ProductDetailsScreen() {
         <Message variant='secondary'>{error}</Message>
       ) : (
         <div>
+          {errorMsg && (
+            <Message variant='secondary' show={msgShow}>
+              {errorMsg}
+            </Message>
+          )}
+          {successMsg && (
+            <Message variant='success' show={msgShow}>
+              {successMsg}
+            </Message>
+          )}
           <Row>
             <Col md={5}>
               <Image src={product && product.image} alt='product' fluid />
@@ -74,13 +114,13 @@ function ProductDetailsScreen() {
                   </h5>
                 </ListGroupItem>
                 <ListGroupItem className='mt-4'>
-                  <Link
-                    to='/cart'
+                  <Button
                     className='btn btn-primary btn-lg'
-                    style={{ display: 'block' }}
+                    style={{ display: 'block', width: '100%' }}
+                    onClick={() => addHandler()}
                   >
                     <i className='fas fa-shopping-cart' /> Add To Cart
-                  </Link>
+                  </Button>
                   <Button
                     className='btn btn-light btn-lg btn-block'
                     style={{ width: '100%' }}

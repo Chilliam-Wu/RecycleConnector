@@ -13,6 +13,7 @@ import {
   postAddReducer,
   postDeleteReducer,
 } from './postReducers';
+import { cartAddReducer, cartDetailsReducer } from './cartReducers';
 
 export default combineReducers({
   userRegister: userRegisterReducer,
@@ -26,4 +27,6 @@ export default combineReducers({
   postEdit: postEditReducer,
   postAdd: postAddReducer,
   postDelete: postDeleteReducer,
+  cartAdd: cartAddReducer,
+  cartDetails: cartDetailsReducer,
 });

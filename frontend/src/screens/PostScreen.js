@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Col, Image, Row, Table } from 'react-bootstrap';
+import { Button, Image, Table } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { getPosts, editPost, deletePost } from '../actions/postActions';
@@ -16,7 +16,7 @@ function PostScreen() {
   const { loading, error, posts } = postInfo;
 
   const postEdit = useSelector((state) => state.postEdit);
-  const { loading: edit_loading, error: edit_error, success } = postEdit;
+  const { loading: edit_loading, error: edit_error } = postEdit;
 
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
@@ -110,7 +110,7 @@ function PostScreen() {
 
   return (
     <div>
-      <h1>Your post</h1>
+      <h1>Your Post</h1>
       <Button className='btn btn-light my-5' onClick={() => navigate(-1)}>
         Go back
       </Button>
@@ -118,7 +118,6 @@ function PostScreen() {
         {' '}
         <i className='fas fa-plus'></i> Add post
       </Link>
-      {/* {edit_error && <Message variant='secondary'>{edit_error}</Message>} */}
       {message && (
         <Message show={show} variant='secondary'>
           {message}
