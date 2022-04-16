@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { Button, Col, Image, ListGroup, Row, Table } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { getCartDetails } from '../actions/cartActions';
+import { deleteFromCart, getCartDetails } from '../actions/cartActions';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
+import { DELETE_FROM_CART_RESET } from '../constants/cartConstants';
 
 function CartScreen() {
   const navigate = useNavigate();
@@ -15,6 +16,9 @@ function CartScreen() {
 
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
+
+  const cartDelete = useSelector((state) => state.cartDelete);
+  const { success: delete_success } = cartDelete;
 
   // init checkState
   const [checkState, setCheckState] = useState(new Array(100).fill(true));
@@ -49,13 +53,21 @@ function CartScreen() {
     setCount(items);
   };
 
+  const deleteHandler = (id) => {
+    dispatch(deleteFromCart(id));
+  };
+
   useEffect(() => {
     if (!userInfo) {
       navigate('/login');
     }
 
+    if (delete_success) {
+      dispatch({ type: DELETE_FROM_CART_RESET });
+    }
+
     dispatch(getCartDetails());
-  }, [dispatch, navigate, userInfo]);
+  }, [dispatch, navigate, userInfo, delete_success]);
 
   return (
     <div>
@@ -69,7 +81,12 @@ function CartScreen() {
         <Message variant='secondary'>{error}</Message>
       ) : cartItems.length === 0 ? (
         <Message variant='info'>
-          <h6 style={{ color: 'white' }}>Your cart is empty.</h6>
+          <h6 style={{ color: 'white' }}>
+            Your cart is empty.{' '}
+            <Link to='/' className='mx-3'>
+              Add items
+            </Link>{' '}
+          </h6>
         </Message>
       ) : (
         <div>
@@ -107,7 +124,10 @@ function CartScreen() {
                       </Col>
                       <Col md={2}>${Number(item.price).toFixed(2)}</Col>
                       <Col md={1}>
-                        <Button variant='light'>
+                        <Button
+                          variant='light'
+                          onClick={() => deleteHandler(item.product)}
+                        >
                           <i className='fas fa-trash'></i>
                         </Button>
                       </Col>

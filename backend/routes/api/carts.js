@@ -71,7 +71,30 @@ router.post('/:id', verify, async (req, res) => {
   }
 });
 
-//@route       Get api/carts
+//@route       DELETE api/carts/:id
+//@desc        Delete Item From Cart
+//@access      Private
+router.delete('/:id', verify, async (req, res) => {
+  const { id: product_id } = req.params;
+  try {
+    const carts = await Cart.find().all();
+    const user_cart = carts.filter(
+      (item) => item.userInfo.user.toString() === req.user.id
+    )[0];
+
+    // filter product id
+    const items = user_cart.cartItems.filter(
+      (item) => item.product.toString() !== product_id
+    );
+    user_cart.cartItems = items;
+    await user_cart.save();
+    return res.status(200).json({ msg: 'Delete successfully!' });
+  } catch (error) {
+    return res.status(500).json({ msg: 'Server error' });
+  }
+});
+
+//@route       GET api/carts
 //@desc        Get User Cart
 //@access      Private
 router.get('/', verify, async (req, res) => {
