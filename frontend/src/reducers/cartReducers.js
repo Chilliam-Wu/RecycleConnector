@@ -31,6 +31,7 @@ export const cartDetailsReducer = (state = { cartItems: [] }, action) => {
       return {
         loading: false,
         cartItems: action.payload ? action.payload : [],
+        cartLength: action.payload ? action.payload.length : 0,
       };
     case GET_CART_DETAILS_FAIL:
       return { loading: false, error: action.payload };
