@@ -11,7 +11,8 @@ const cartSchema = new mongoose.Schema({
       type: String,
     },
     avatar: {
-      type: String,
+      data: Buffer,
+      contentType: String,
     },
   },
 

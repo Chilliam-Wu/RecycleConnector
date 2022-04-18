@@ -134,6 +134,10 @@ function PostScreen() {
         <Loader />
       ) : error ? (
         <Message variant='secondary'>{error}</Message>
+      ) : posts.length === 0 ? (
+        <Message variant='info'>
+          <h6 style={{ color: 'white' }}>You have no posts.</h6>
+        </Message>
       ) : (
         <Table responsive striped>
           <thead>

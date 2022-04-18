@@ -4,8 +4,12 @@ const userSchema = new mongoose.Schema({
   token: {
     type: String,
   },
+  // avatar: {
+  //   type: String,
+  // },
   avatar: {
-    type: String,
+    data: Buffer,
+    contentType: String,
   },
   username: {
     type: String,

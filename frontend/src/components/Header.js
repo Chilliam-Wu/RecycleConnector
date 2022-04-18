@@ -42,7 +42,14 @@ function Header() {
                       <span>
                         <Image
                           className='avatar me-1'
-                          src={userInfo.avatar}
+                          src={
+                            userInfo &&
+                            `data:image/*;base64,${btoa(
+                              userInfo.avatar.data.data
+                                .map((c) => String.fromCharCode(c))
+                                .join('')
+                            )}`
+                          }
                           style={{ height: '25px' }}
                         />
                         {userInfo.username}

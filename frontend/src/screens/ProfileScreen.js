@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, Col, Form, Image, Row } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import AvatarEditor from 'react-avatar-editor';
 import FormContainer from '../components/FormContainer';
 import {
   changePassword,
@@ -65,6 +66,7 @@ function ProfileScreen() {
 
   // show the password or not
   const [newPasswordShown, setNewPasswordShown] = useState(false);
+  const [newAvatar, setNewAvartar] = useState('');
 
   const changeHandler = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -141,7 +143,7 @@ function ProfileScreen() {
 
   const profileSubmit = (e) => {
     e.preventDefault();
-    dispatch(editProfile(id, user_name));
+    dispatch(editProfile(id, user_name, newAvatar));
   };
 
   const confirmSubmit = (e) => {
@@ -163,6 +165,12 @@ function ProfileScreen() {
     }
   };
 
+  const fileHandler = (e) => {
+    setNewAvartar(e.target.files[0]);
+  };
+
+  console.log(newAvatar);
+
   return (
     <div>
       <Button className='btn btn-light mt-5' onClick={() => navigate(-1)}>
@@ -182,22 +190,69 @@ function ProfileScreen() {
             {editSuccessMessage}
           </Message>
         )}
-        <Form onSubmit={(e) => profileSubmit(e)}>
+        <Form onSubmit={(e) => profileSubmit(e)} encType='multipart/form-data'>
           <Form.Group controlId='formFile' className='mb-3'>
             <Form.Label>Avatar:</Form.Label>
             <Row>
               <Col className='mx-5' xs={3}>
-                <Image
+                {/* <Image
                   className='avatar'
-                  src={userInfo && userInfo.avatar}
+                  src={
+                    newAvatar === '' ? userInfo && userInfo.avatar : newAvatar
+                  }
                   alt='Avatar'
                   style={{ height: '100px' }}
-                />
+                /> */}
+                {newAvatar === '' ? (
+                  <Image
+                    className='avatar'
+                    src={
+                      userInfo &&
+                      `data:image/png;base64,${btoa(
+                        userInfo.avatar.data.data
+                          .map((c) => String.fromCharCode(c))
+                          .join('')
+                      )}`
+                    }
+                    alt='Avatar'
+                    style={{ height: '100px' }}
+                  />
+                ) : (
+                  <AvatarEditor
+                    image={newAvatar}
+                    scale={1.2}
+                    width={100}
+                    height={100}
+                    border={10}
+                    borderRadius={220}
+                    // color={[255, 255, 255, 0.6]} // RGBA
+                    rotate={0}
+                  ></AvatarEditor>
+                )}
               </Col>
               <Col className='d-flex  align-items-center justify-content-center'>
-                <Form.Control type='file' size='sm'></Form.Control>
+                <Form.Control
+                  type='file'
+                  size='sm'
+                  name='avatar'
+                  onChange={(e) => fileHandler(e)}
+                ></Form.Control>
               </Col>
             </Row>
+            {/* <Row className='mt-5'>
+              <AvatarEditor
+                image={
+                  newAvatar === '' ? userInfo && userInfo.avatar : newAvatar
+                }
+                scale={1.2}
+                width={220}
+                height={220}
+                border={10}
+                borderRadius={220}
+                // color={[255, 255, 255, 0.6]} // RGBA
+                rotate={0}
+              ></AvatarEditor>
+            </Row> */}
           </Form.Group>
           <Form.Group controlId='username' className='mb-3'>
             <Form.Label>Username:</Form.Label>

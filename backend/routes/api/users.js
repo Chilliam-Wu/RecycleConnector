@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const config = require('config');
 const router = express.Router();
 const User = require('../../models/User');
+const axios = require('axios');
 const verify = require('../../middleware/verify');
 
 //@route       POST api/users/register
@@ -22,11 +23,28 @@ router.post('/register', async (req, res) => {
     }
 
     // get user gravatar
-    const avatar = gravatar.url(email, {
-      s: '200',
-      r: 'rg',
-      d: 'robohash',
+    const avatar_urL = gravatar.url(
+      email,
+      {
+        s: '200',
+        r: 'rg',
+        d: 'robohash',
+      },
+      true
+    );
+
+    console.log(avatar_urL);
+
+    const avatar_data = await axios.get(avatar_urL, {
+      responseType: 'arraybuffer',
     });
+
+    const encode_avatar = avatar_data.data.toString('base64');
+
+    const avatar = {
+      contentType: 'image/png',
+      data: Buffer.from(encode_avatar, 'base64'),
+    };
 
     user = new User({
       avatar,

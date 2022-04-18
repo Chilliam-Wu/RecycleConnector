@@ -30,6 +30,7 @@ app.use('/api/users', require('./routes/api/users'));
 app.use('/api/products', require('./routes/api/products'));
 app.use('/api/posts', require('./routes/api/posts'));
 app.use('/api/carts', require('./routes/api/carts'));
+app.use('/api/avatars', require('./routes/api/avatars'));
 
 app.get('/', (req, res) => res.send('API is running'));
 
