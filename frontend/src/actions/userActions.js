@@ -102,21 +102,21 @@ export const editProfile =
       };
 
       const updatedProfile = JSON.stringify({ username });
-      // const updatedAvatar = new FormData();
-      // updatedAvatar.append('file', newAvatar, newAvatar.name);
+
       const updatedAvatar = new FormData();
       updatedAvatar.append('avatar', newAvatar);
-      const avatar = updatedAvatar[0];
+
+      if (updatedAvatar.get('avatar') !== '') {
+        await axios.post(`${URL}/api/avatars`, updatedAvatar, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+      }
 
       const {
         data: { user },
       } = await axios.put(`${URL}/api/users/${id}`, updatedProfile, config);
-
-      await axios.post(`${URL}/api/avatars`, avatar, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
 
       dispatch({ type: EDIT_PROFILE_SUCCESS });
       dispatch({ type: LOGIN_SUCCESS, payload: user });

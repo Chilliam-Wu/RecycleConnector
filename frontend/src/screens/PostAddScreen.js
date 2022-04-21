@@ -31,7 +31,14 @@ function PostAddScreen() {
 
   const submithandler = (e) => {
     e.preventDefault();
-    dispatch(addPost(name, category, price, description));
+    dispatch(
+      addPost(
+        name,
+        category.charAt(0).toLowerCase() + category.slice(1),
+        price,
+        description
+      )
+    );
   };
 
   useEffect(() => {

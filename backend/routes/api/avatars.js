@@ -18,10 +18,11 @@ const Cart = require('../../models/Cart');
 //   },
 // });
 // const upload = multer({ storage: storage });
+// const upload = multer({ dest: 'upload/avatars' });
 const upload = multer({ dest: 'upload/avatars' });
 
 router.post('/', verify, upload.single('avatar'), async (req, res) => {
-  console.log(req.file, req.body);
+  // console.log(req.file, req.body);
 
   try {
     const user = await User.findById(req.user.id);
@@ -43,12 +44,14 @@ router.post('/', verify, upload.single('avatar'), async (req, res) => {
     };
 
     // update
-    products.map((product) => (product.userInfo.avatar = final_img));
+    if (products.length !== 0) {
+      products.map((product) => (product.userInfo.avatar = final_img));
+      products.forEach((product) => product.save());
+    }
     user.avatar = final_img;
     cart.userInfo.avatar = final_img;
 
     // save
-    products.forEach((product) => product.save());
     await cart.save();
     await user.save();
 

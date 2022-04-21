@@ -169,8 +169,6 @@ function ProfileScreen() {
     setNewAvartar(e.target.files[0]);
   };
 
-  console.log(newAvatar);
-
   return (
     <div>
       <Button className='btn btn-light mt-5' onClick={() => navigate(-1)}>
@@ -190,7 +188,7 @@ function ProfileScreen() {
             {editSuccessMessage}
           </Message>
         )}
-        <Form onSubmit={(e) => profileSubmit(e)} encType='multipart/form-data'>
+        <Form encType='multipart/form-data'>
           <Form.Group controlId='formFile' className='mb-3'>
             <Form.Label>Avatar:</Form.Label>
             <Row>
@@ -254,6 +252,8 @@ function ProfileScreen() {
               ></AvatarEditor>
             </Row> */}
           </Form.Group>
+        </Form>
+        <Form onSubmit={(e) => profileSubmit(e)}>
           <Form.Group controlId='username' className='mb-3'>
             <Form.Label>Username:</Form.Label>
             <Form.Control
