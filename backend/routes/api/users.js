@@ -6,8 +6,8 @@ const jwt = require('jsonwebtoken');
 const config = require('config');
 const router = express.Router();
 const User = require('../../models/User');
-const Products = require('../../models/User');
-const Cart = require('../../models/User');
+const Products = require('../../models/Products');
+const Cart = require('../../models/Cart');
 const axios = require('axios');
 const verify = require('../../middleware/verify');
 
@@ -154,27 +154,24 @@ router.put('/:id', verify, async (req, res) => {
     const user = await User.findById(user_id);
     const allProducts = await Products.find().all();
     const carts = await Cart.find().all();
-    // const products = allProducts.filter(
-    //   (product) => product.userInfo.user.toString() === req.user.id
-    // );
-    // console.log(products);
-    // const cart = carts.filter(
-    //   (item) => item.userInfo.user.toString() === req.user.id
-    // )[0];
+    const products = allProducts.filter(
+      (product) => product.userInfo.user.toString() === req.user.id
+    );
+    const cart = carts.filter(
+      (item) => item.userInfo.user.toString() === req.user.id
+    )[0];
 
     // update
-    // if (products.length !== 0) {
-    //   products.map((product) => {
-    //     product.userInfo.username = username;
-    //     product.save();
-    //   });
-    // }
-    // cart.userInfo.username = username;
     user.username = username;
+    if (products.length !== 0) {
+      products.map((product) => (product.userInfo.username = username));
+      products.forEach((product) => product.save());
+    }
+    cart.userInfo.username = username;
 
     // save
-    // await cart.save();
     await user.save();
+    await cart.save();
 
     // generate a token
     const { _id: id, avatar, email } = user;
