@@ -1,4 +1,0 @@
-{
-    "mongoDBCloud": "mongodb+srv://Chilliam:chilliamadmin@recconnector.ysczx.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
-    "secretKey" : "recycleconnector"
-}
