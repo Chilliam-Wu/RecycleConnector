@@ -22,8 +22,12 @@ const cartSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Products',
       },
+      // image: {
+      //   type: String,
+      // },
       image: {
-        type: String,
+        data: Buffer,
+        contentType: String,
       },
       name: {
         type: String,

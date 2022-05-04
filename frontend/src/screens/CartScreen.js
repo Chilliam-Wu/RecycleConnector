@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Col, Image, ListGroup, Row, Table } from 'react-bootstrap';
+import { Button, Col, Image, ListGroup, Row } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteFromCart, getCartDetails } from '../actions/cartActions';
@@ -109,7 +109,16 @@ function CartScreen() {
                         <Link to={`/products/clothes/${item.product}`}>
                           <Image
                             style={{ height: '150px', width: '120px' }}
-                            src={item.image}
+                            // src={item.image}
+                            src={
+                              typeof item.image === 'string'
+                                ? item.image
+                                : `data:image/png;base64,${btoa(
+                                    item.image.data.data
+                                      .map((c) => String.fromCharCode(c))
+                                      .join('')
+                                  )}`
+                            }
                           ></Image>
                         </Link>
                       </Col>

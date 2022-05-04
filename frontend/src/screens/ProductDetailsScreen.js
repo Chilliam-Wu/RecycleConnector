@@ -9,7 +9,7 @@ import {
   ListGroupItem,
   Row,
 } from 'react-bootstrap';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { getProductDetails } from '../actions/productActions';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
@@ -85,7 +85,22 @@ function ProductDetailsScreen() {
           )}
           <Row>
             <Col md={5}>
-              <Image src={product && product.image} alt='product' fluid />
+              {/* <Image src={product && product.image} alt='product' fluid /> */}
+              <Image
+                src={
+                  product &&
+                  product.image &&
+                  (typeof product.image === 'string'
+                    ? product.image
+                    : `data:image/png;base64,${btoa(
+                        product.image.data.data
+                          .map((c) => String.fromCharCode(c))
+                          .join('')
+                      )}`)
+                }
+                alt='product'
+                fluid
+              />
             </Col>
             <Col md={7}>
               <ListGroup variant='flush' className='ms-5 mb-5'>

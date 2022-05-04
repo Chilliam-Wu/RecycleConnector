@@ -16,6 +16,7 @@ function PostAddScreen() {
     category: '',
     description: '',
   });
+  const [newImage, setNewImage] = useState('');
 
   const { name, category, price, description } = formData;
 
@@ -23,11 +24,17 @@ function PostAddScreen() {
   const { userInfo } = userLogin;
 
   const postAdd = useSelector((state) => state.postAdd);
-  const { error, success } = postAdd;
+  const { success } = postAdd;
 
   const changeHandler = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+
+  const fileHandler = (e) => {
+    setNewImage(e.target.files[0]);
+  };
+
+  console.log(newImage);
 
   const submithandler = (e) => {
     e.preventDefault();
@@ -36,7 +43,8 @@ function PostAddScreen() {
         name,
         category.charAt(0).toLowerCase() + category.slice(1),
         price,
-        description
+        description,
+        newImage
       )
     );
   };
@@ -69,7 +77,11 @@ function PostAddScreen() {
           </FormGroup>
           <FormGroup className='my-3'>
             <Form.Label>Image</Form.Label>
-            <Form.Control type='file'></Form.Control>
+            <Form.Control
+              type='file'
+              name='product_image'
+              onChange={(e) => fileHandler(e)}
+            ></Form.Control>
           </FormGroup>
           <FormGroup className='my-3'>
             <Form.Label>Price</Form.Label>

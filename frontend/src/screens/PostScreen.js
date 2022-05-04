@@ -158,7 +158,16 @@ function PostScreen() {
                 <td style={{ verticalAlign: 'middle' }}>
                   <Image
                     style={{ height: '150px', width: '120px' }}
-                    src={post.image}
+                    // src={post.image}
+                    src={
+                      typeof post.image === 'string'
+                        ? post.image
+                        : `data:image/png;base64,${btoa(
+                            post.image.data.data
+                              .map((c) => String.fromCharCode(c))
+                              .join('')
+                          )}`
+                    }
                   ></Image>
                 </td>
                 <td style={{ verticalAlign: 'middle' }}>

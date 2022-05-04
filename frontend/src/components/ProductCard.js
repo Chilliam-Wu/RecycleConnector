@@ -19,7 +19,17 @@ function ProductCard({ product }) {
       <Card>
         <i className='fas fa-shopping-cart fs-5'></i>
         <a href={`/products/${category}/${id}`}>
-          <Card.Img variant='top' src={image} />
+          {/* <Card.Img variant='top' src={image} /> */}
+          <Card.Img
+            variant='top'
+            src={
+              typeof image === 'string'
+                ? image
+                : `data:image/png;base64,${btoa(
+                    image.data.data.map((c) => String.fromCharCode(c)).join('')
+                  )}`
+            }
+          />
         </a>
         <Card.Body>
           <a

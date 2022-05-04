@@ -1,7 +1,9 @@
 const express = require('express');
+const multer = require('multer');
 const verify = require('../../middleware/verify');
 const router = express.Router();
 const Products = require('../../models/Products');
+const fs = require('fs');
 const User = require('../../models/User');
 
 //@route       POST api/products
@@ -35,6 +37,39 @@ router.post('/', verify, async (req, res) => {
     return res.status(500).json({ msg: 'Server error' });
   }
 });
+
+//@route       POST api/products/:product_id
+//@desc        Add Product or Post Image
+//@access      Private
+const upload = multer({ dest: 'upload/product_images' });
+
+router.post(
+  '/:id',
+  verify,
+  upload.single('product_image'),
+  async (req, res) => {
+    const { id } = req.params;
+    try {
+      const product = await Products.findById(id);
+
+      // get encoded image
+      const img = fs.readFileSync(req.file.path);
+      const encode_img = img.toString('base64');
+      const final_img = {
+        contentType: req.file.mimetype,
+        data: Buffer.from(encode_img, 'base64'),
+      };
+
+      // update
+      product.image = final_img;
+      await product.save();
+
+      return res.status(200).json({ msg: 'Upload image successfully!' });
+    } catch (error) {
+      return res.status(500).json({ msg: 'Server error' });
+    }
+  }
+);
 
 //@route       DELETE api/products/:id
 //@desc        Remove Certain Product or Post

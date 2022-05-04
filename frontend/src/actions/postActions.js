@@ -78,7 +78,8 @@ export const editPost =
   };
 
 export const addPost =
-  (name, category, price, description) => async (dispatch, getState) => {
+  (name, category, price, description, newImage) =>
+  async (dispatch, getState) => {
     try {
       dispatch({ type: ADD_POST_REQUEST });
       const {
@@ -96,7 +97,19 @@ export const addPost =
         },
       };
 
-      await axios.post(`${URL}/api/products`, newPost, config);
+      const { data } = await axios.post(`${URL}/api/products`, newPost, config);
+      const product_id = data._id;
+
+      const uploadedImage = new FormData();
+      uploadedImage.append('product_image', newImage);
+
+      if (uploadedImage.get('product_image') !== '') {
+        await axios.post(`${URL}/api/products/${product_id}`, uploadedImage, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+      }
 
       dispatch({ type: ADD_POST_SUCCESS });
     } catch (error) {
