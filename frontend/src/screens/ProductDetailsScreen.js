@@ -121,7 +121,13 @@ function ProductDetailsScreen() {
                       <Image
                         className='avatar me-1'
                         src={
-                          product && product.userInfo && product.userInfo.avatar
+                          product &&
+                          product.userInfo &&
+                          `data:image/*;base64,${btoa(
+                            product.userInfo.avatar.data.data
+                              .map((c) => String.fromCharCode(c))
+                              .join('')
+                          )}`
                         }
                         style={{ height: '25px' }}
                       />
