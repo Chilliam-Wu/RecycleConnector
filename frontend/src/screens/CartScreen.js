@@ -57,6 +57,14 @@ function CartScreen() {
     dispatch(deleteFromCart(id));
   };
 
+  const checkoutHandler = () => {
+    if (!userInfo) {
+      navigate('/login');
+    } else {
+      navigate('/shipping');
+    }
+  };
+
   useEffect(() => {
     if (!userInfo) {
       navigate('/login');
@@ -176,6 +184,7 @@ function CartScreen() {
                       <Button
                         className='mt-2 btn btn-primary'
                         style={{ display: 'block', width: '100%' }}
+                        onClick={checkoutHandler}
                       >
                         Proceed to Checkout
                       </Button>
